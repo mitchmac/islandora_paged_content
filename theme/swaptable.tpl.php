@@ -4,6 +4,9 @@
    */
 ?>
 <div id='<?php print $element['#id'] . '-wrapper'; ?>'>
+  <div class="swaptable-display-select">
+    <?php print $display_select; ?>
+  </div>
   <table class="swaptable-wrapper">
     <tbody>
       <tr>

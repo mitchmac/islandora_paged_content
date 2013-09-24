@@ -350,11 +350,12 @@ function islandora_paged_content_manage_pages_sequences_form(array $form, array 
  */
 function islandora_paged_content_manage_pages_sequences_form_submit(array $form, array &$form_state) {
   $object = $form_state['object'];
+  dsm($form_state['values']);
   $pages = $form_state['values']['table'];
-  if ($pages) {
+  /*if ($pages) {
     $batch = islandora_paged_content_sequence_pages_batch($object, $pages);
     batch_set($batch);
-  }
+    }*/
 }
 
 /**

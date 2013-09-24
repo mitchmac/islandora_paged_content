@@ -63,13 +63,13 @@ function islandora_paged_content_element_info() {
         'tags' => array('<<', '<', '', '>', '>>'),
         'limit' => 10,
         'quantity' => 3,
-        'total' => 0,
       ),
       '#prefix' => '<div class="swaptable-wrapper">',
       '#suffix' => '</div>',
       '#attributes' => array(
         'class' => array('swaptable'),
       ),
+      '#process' => array('swaptable_process'),
       '#theme' => 'swaptable',
       '#theme_wrappers' => array('form_element'),
       '#value_callback' => 'swaptable_value',
@@ -129,6 +129,54 @@ function islandora_paged_content_permission() {
       'description' => t('Allows users to edit existing OCR stream. Note: Fedora XACML security policies may override this permission.'),
     ),
   );
+}
+
+/**
+ * Callback to process the swaptable form element.
+ *
+ * Adds a select field that allows the user to select the number of pages to
+ * display in each table.
+ */
+function swaptable_process(array $element, array &$form_state) {
+  $values = $form_state['values'];
+  $options = array(10, 25, 50, 100);
+  $default = isset($values['display']) ? $values['display'] : $options[0];
+  $element['#prefix'] = '<div id="swaptable-ajax-wrapper">';
+  $element['#suffix'] = '</div>';
+  $element['display'] = array(
+    '#type' => 'select',
+    '#title' => t('Display'),
+    '#options' => drupal_map_assoc($options),
+    '#default_value' => $default,
+    '#description' => t('The number of pages to display in each table.'),
+    '#ajax' => array(
+      'callback' => 'swaptable_change_number_of_pages_displayed',
+      'wrapper' => 'swaptable-ajax-wrapper',
+    ),
+  );
+  $element['#pager']['limit'] = $default;
+  return $element;
+}
+
+/**
+ * Ajax callback for changing the number of pages displayed.
+ */
+function swaptable_change_number_of_pages_displayed(array $form, array $form_state) {
+  $find_swaptable = function($form) use (&$find_swaptable) {
+    if (isset($form['#type']) && $form['#type'] == 'swaptable') {
+      return $form;
+    }
+    foreach (element_children($form) as $child) {
+      $result = $find_swaptable($form[$child]);
+      if ($result !== NULL) {
+        return $result;
+      }
+    }
+    return NULL;
+  };
+  $swaptable = $find_swaptable($form);
+  debug($swaptable);
+  return $swaptable;
 }
 
 /**

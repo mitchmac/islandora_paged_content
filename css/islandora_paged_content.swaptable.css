@@ -28,14 +28,13 @@ tbody > tr.ui-selected {
 .swaptable-toggle-original-ordering {
   font-size: 0.9em;
 }
-.swaptable-toggle-original-ordering-wrapper {
+.swaptable-toggle-original-ordering-wrapper, .swaptable-display-select {
   text-align: right;
 }
 tr.ui-modified > td.tn:after {
   content: url(../images/modified.png);
   vertical-align: 240%;
 }
-
 /* This nonsensical rule is preventing a bug in Firefox that would prevent the
   dropping of items being drug when there was intersection with a placeholder.
   The bug can be examined at 4fd864c2629949ca4c67bbe52e4cf4d740528735*/

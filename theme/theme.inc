@@ -55,6 +55,7 @@ function template_preprocess_swaptable(array &$variables) {
   $pagers = swaptable_pagers($table['#pager'], count($items));
   $variables['left_table'] = swaptable_table('left', $table, $pagers[0]);
   $variables['right_table'] = swaptable_table('right', $table, $pagers[1]);
+  $variables['display_select'] = drupal_render($table['display']);
   $base = $table['#id'];
   $settings['swapTable'][$base] = array(
     'left' => "{$base}-left",
@@ -128,11 +129,9 @@ function swaptable_pager($element, $tags, $quantity, $limit, $total) {
  * @return array
  *   The rows definition for the table.
  */
-function swaptable_table_rows($position, array &$items, array $pager) {
+function swaptable_table_rows($position, array $items, array $pager) {
   $rows = array();
-  // Once pager support is enabled uncomment the line below.
-  // Code sniffer was refusing to ignore the commented code here.  Please see
-  // d251150a273ce3f4a52a3948ecb8ea235433cb8d to retrieve it.
+  $items = array_slice($items, $pager['page'] * $pager['limit'], $pager['limit']);
   $count = 1;
   foreach ($items as $id => &$row) {
     $data = array();
@@ -146,7 +145,6 @@ function swaptable_table_rows($position, array &$items, array $pager) {
     );
     foreach (element_children($row) as $j) {
       $cell = &$row[$j];
-      // @todo Make label into links?
       $data[] = array(
         'data' => empty($cell['#printed']) ? drupal_render($cell) : $cell['#children'],
         'class' => array($j),
@@ -176,8 +174,6 @@ function swaptable_table_rows($position, array &$items, array $pager) {
  *   The rendered table.
  */
 function swaptable_table($position, array $table, array $pager) {
-  // To get pagers to render just add append "$pager['pager']" to the
-  // the returned value.
   $table['#attributes']['id'] = "{$table['#id']}-{$position}";
   $table['#attributes']['name'] = $position;
   $table['#attributes']['valign'] = 'top';
@@ -193,5 +189,5 @@ function swaptable_table($position, array $table, array $pager) {
   return theme('table', array(
       'header' => array_merge($header, $table['#header']),
       'rows' => swaptable_table_rows($position, $table['#rows'], $pager),
-      'attributes' => $table['#attributes']));
+      'attributes' => $table['#attributes'])) . $pager['pager'];
 }
